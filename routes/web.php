@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ToDoListController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,3 +21,9 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::middleware('auth')->group(static function () {
+    Route::get('/todo-lists', [ToDoListController::class, 'index'])->name('todo-lists-index');
+    Route::get('/todo-lists/{todolist}', [ToDoListController::class, 'list'])->name('todo-list');
+
+});
