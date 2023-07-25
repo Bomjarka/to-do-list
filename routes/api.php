@@ -19,4 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/create-list', [ToDoListController::class, 'createList'])->name('create-list');
+Route::post('/create-list', [ToDoListController::class, 'createList'])->name('create-list');
+Route::post('/create-deal', [ToDoListController::class, 'createDeal'])->name('create-deal');

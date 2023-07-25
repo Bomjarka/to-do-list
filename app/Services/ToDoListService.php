@@ -3,11 +3,37 @@
 namespace App\Services;
 
 use App\Models\ToDoList;
+use App\Models\ToDoListItem;
 
 class ToDoListService
 {
-    public function createToDoList(string $name, int $userId)
+    /**
+     * @param string $name
+     * @param int $userId
+     * @param array $deals
+     * @return mixed
+     */
+    public function createToDoList(string $name, int $userId, array $deals): mixed
     {
-        ToDoList::create(['name' => $name, 'user_id' => $userId]);
+        $toDoList = ToDoList::create(['name' => $name, 'user_id' => $userId]);
+        if (!empty($deals)) {
+            foreach ($deals as $deal) {
+                ToDoListItem::create(['name' => $deal, 'user_id' => $userId, 'list_id' => $toDoList->id]);
+            }
+        }
+
+        return $toDoList;
+
+    }
+
+    /**
+     * @param string $name
+     * @param int $userId
+     * @param int $listId
+     * @return mixed
+     */
+    public function createDeal(string $name, int $userId, int $listId): mixed
+    {
+      return ToDoListItem::create(['name' => $name, 'user_id' => $userId, 'list_id' => $listId]);
     }
 }

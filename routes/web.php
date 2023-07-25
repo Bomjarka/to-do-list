@@ -22,4 +22,8 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/todo-lists', [ToDoListController::class, 'index'])->name('todo-lists-index');
+Route::middleware('auth')->group(static function () {
+    Route::get('/todo-lists', [ToDoListController::class, 'index'])->name('todo-lists-index');
+    Route::get('/todo-lists/{todolist}', [ToDoListController::class, 'list'])->name('todo-list');
+
+});
