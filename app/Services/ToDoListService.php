@@ -36,4 +36,30 @@ class ToDoListService
     {
       return ToDoListItem::create(['name' => $name, 'user_id' => $userId, 'list_id' => $listId]);
     }
+
+    /**
+     * @param int $dealId
+     * @return void
+     */
+    public function removeDeal(int $dealId): void
+    {
+        $toDoListItem = ToDoListItem::find($dealId);
+        if ($toDoListItem) {
+            $toDoListItem->delete();
+        }
+    }
+
+    /**
+     * @param string $newName
+     * @param int $dealId
+     * @return void
+     */
+    public function updateDeal(string $newName, int $dealId): void
+    {
+        $toDoListItem = ToDoListItem::find($dealId);
+        if ($toDoListItem) {
+            $toDoListItem->name = $newName;
+            $toDoListItem->save();
+        }
+    }
 }

@@ -63,6 +63,32 @@ class ToDoListController extends Controller
             'msg' => 'OK',
             'data' => [
                 'dealName' => $createdDeal->name,
+                'dealId' => $createdDeal->id,
+            ]
+        ]);
+    }
+
+    public function removeDeal(Request $request, ToDoListService $toDoListService)
+    {
+        $dealId = $request->dealId;
+        $toDoListService->removeDeal($dealId);
+        return response()->json([
+            'msg' => 'OK',
+            'data' => [
+                'dealId' => $dealId,
+            ]
+        ]);
+    }
+    public function updateDeal(Request $request, ToDoListService $toDoListService)
+    {
+        $newName = $request->newName;
+        $dealId = $request->dealId;
+        $toDoListService->updateDeal($newName, $dealId);
+        return response()->json([
+            'msg' => 'OK',
+            'data' => [
+                'dealId' => $dealId,
+                'dealName' => $newName,
             ]
         ]);
     }
