@@ -119,6 +119,8 @@
                             '<p class="card-text">ToDo points: ' + dealsCount + '</p>' +
                             '</div><div class="card-footer"><small class="text-muted">Created: ' + listCreated + '</small></div></div><br>'));
 
+                        //modal() is not a function, разобраться с порядком загрузки скриптов
+                        // $('#createListModal').modal('hide');
                     }
                 });
             }
