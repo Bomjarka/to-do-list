@@ -110,7 +110,7 @@
                         let listName = data.data.listName
                         let listCreated = data.data.created
                         let dealsCount = data.data.dealsCount
-                        let route = window.location.href + listId
+                        let route = window.location.href + '/' + listId
 
                         $('.card-deck').append($('' +
                             '<div class="card"><' +
