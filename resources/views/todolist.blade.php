@@ -14,22 +14,34 @@
                                 <h5>No deals</h5>
                             @else
                                 <ul class="list-group list-group-numbered">
-                                    @foreach($toDoList->listItems as $deal)
-                                        <li class="list-group-item" id="deal-item-{{ $deal->id }}">
+                                    @foreach($toDoList->listItems->sortBy('created_at') as $deal)
+                                        <li class="list-group-item" id="deal-item-{{ $deal->id }}"
+                                            data-deal-id="{{ $deal->id }}">
                                             <span>{{ $deal->name }}</span>
-                                            <i class="fa-solid fa-pencil" id="deal-id-{{ $deal->id }}"
-                                               data-deal-id="{{ $deal->id }}"></i>
-                                            <i class="fa-solid fa-trash-can" id="deal-id-{{ $deal->id }}"
-                                               data-deal-id="{{ $deal->id }}"></i>
+                                            <i class="fa-solid fa-pencil" id="deal-edit-id-{{ $deal->id }}"></i>
+                                            <i class="fa-solid fa-trash-can" id="deal-trash-id-{{ $deal->id }}"></i>
+                                            @if($deal->image)
+                                                <a href="{{ url('storage/images/' . $deal->image->name) }}"
+                                                   target="_blank">
+                                                    <img src="{{ url('storage/images/' . $deal->image->preview_name) }}"
+                                                         alt="{{ $deal->image->preview_name }}"></a>
+
+                                            @endif
+                                            <i class="fa-solid fa-image" id="deal-image-id-{{ $deal->id }}"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#addImageModal"></i>
                                         </li>
                                         <label for="edit-deal-id-{{ $deal->id }}" hidden="">Edit deal:</label>
                                         <input
                                             type="text" class="form-control" id="edit-deal-id-{{ $deal->id }}"
                                             aria-describedby="basic-addon3"
                                             value="{{ $deal->name }}" hidden="">
-                                        <button type="button" class="btn btn-primary edit-deal" id="edit-deal-button-{{ $deal->id }}" hidden>Save</button>
-                                        <button type="button" class="btn btn-danger edit-deal" id="cancel-edit-deal-button-{{ $deal->id }}" hidden>Cancel</button>
-
+                                        <button type="button" class="btn btn-primary edit-deal"
+                                                id="edit-deal-button-{{ $deal->id }}" hidden>Save
+                                        </button>
+                                        <button type="button" class="btn btn-danger edit-deal"
+                                                id="cancel-edit-deal-button-{{ $deal->id }}" hidden>Cancel
+                                        </button>
                                     @endforeach
                                 </ul>
                             @endif
@@ -42,14 +54,14 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
+    <!-- Modal add deal-->
     <div class="modal fade" id="createDealModal" tabindex="-1" aria-labelledby="createDealModalLabel"
          aria-hidden="true">
         <form data-toggle="validator" role="form">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="createListModalLabel">New Deal</h5>
+                        <h5 class="modal-title" id="createDealModalLabel">New Deal</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -67,10 +79,104 @@
             </div>
         </form>
     </div>
+    <!-- Modal add image-->
+    <div class="modal fade" id="addImageModal" tabindex="-1" aria-labelledby="addImageModalLabel"
+         aria-hidden="true">
+        <form data-toggle="validator" role="form">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addImageModalLabel">Uploading image</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="file-drop-area">
+                            <span class="choose-file-button">Choose image:</span>
+                            <span class="file-message">or drag and drop file here</span>
+                            <input type="file" class="file-input" accept=".jpg,.jpeg,.png">
+                        </div>
+                        <div id="divImageMediaPreview">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary add-image">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 @endsection
 <script type="module">
     setTimeout(function () {
+        let dealId = '';
+        $('.fa-trash-can').on('click', function () {
+            dealId = $(this).parent().data('deal-id');
+            $.ajax({
+                url: '{{ route('remove-deal') }}',
+                method: 'post',
+                data: {
+                    dealId: dealId
+                },
+                success: function (data) {
+                    if (data['msg'] === 'OK') {
+                        let dealId = data.data.dealId
+                        $('#deal-trash-id-' + dealId).parent().remove();
+                    }
+                    console.log(data['msg']);
+                }
+            });
+        })
+        $('.fa-image').on('click', function () {
+            dealId = $(this).parent().data('deal-id');
+        })
+
+        $('.file-input').on('change', function () {
+            let data = '';
+            if (typeof (FileReader) != "undefined") {
+                let dvPreview = $("#divImageMediaPreview");
+                dvPreview.html("");
+                $($(this)[0].files).each(function () {
+                    let file = $(this);
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        let img = $("<img />");
+                        img.attr("style", "width: 150px; height:100px; padding: 10px");
+                        img.attr("src", e.target.result);
+                        dvPreview.append(img);
+                        data = {'file': reader.result};
+                    }
+                    reader.readAsDataURL(file[0]);
+                });
+            } else {
+                alert("This browser does not support HTML5 FileReader.");
+            }
+            $('.add-image').on('click', function () {
+                $.ajax({
+                    url: '{{ route('add-image') }}',
+                    method: 'post',
+                    data: {
+                        fileData: data,
+                        dealId: dealId
+                    },
+                    success: function (data) {
+                        if (data['msg'] === 'OK') {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
+        });
+
         $('.fa-pencil').hover(
+            function () {
+                $(this).addClass('fa-2xl')
+            },
+            function () {
+                $(this).removeClass('fa-2xl')
+            });
+
+        $('.fa-image').hover(
             function () {
                 $(this).addClass('fa-2xl')
             },
@@ -87,7 +193,7 @@
             });
 
         $('.fa-pencil').on('click', function () {
-            let dealId = $(this).data('deal-id');
+            let dealId = $(this).parent().data('deal-id');
             $(this).parent().hide();
             $('#edit-deal-id-' + dealId).removeAttr('hidden');
             $('label[for=edit-deal-id-' + dealId).removeAttr('hidden');
@@ -125,23 +231,6 @@
                 });
             });
         })
-        $('.fa-trash-can').on('click', function () {
-            let dealId = $(this).data('deal-id');
-            $.ajax({
-                url: '{{ route('remove-deal') }}',
-                method: 'post',
-                data: {
-                    dealId: {{ $deal->id }}
-                },
-                success: function (data) {
-                    if (data['msg'] === 'OK') {
-                        let dealId = data.data.dealId
-                        $('#deal-id-' + dealId).parent().remove();
-                    }
-                    console.log(data['msg']);
-                }
-            });
-        })
         $(".save-deal").on('click', function (e) {
             let dealName = $('#deal-name').val()
             let userId = {{ auth()->user()->id }};
@@ -167,12 +256,13 @@
                             let dealName = data.data.dealName
                             let dealId = data.data.dealId
                             // $('.list-group').append($('<li class="list-group-item">' + dealName + '</li>'));
-                            $('.list-group').append($('<li class="list-group-item">' + dealName + '<i class="fa-solid fa-pencil" id="deal-id-' + dealId + '" data-deal-id="' + dealId + '"></i><i class="fa-solid fa-trash-can" id="deal-id-' + dealId + '" data-deal-id="' + dealId + '"></i></li>'));
+                            $('.list-group').append($('<li class="list-group-item">' + dealName + '<i class="fa-solid fa-pencil" id="deal-id-' + dealId + '" data-deal-id="' + dealId + '"></i><i class="fa-solid fa-trash-can" id="deal-id-' + dealId + '" data-deal-id="' + dealId + '"></i></li><i class="fa-solid fa-image" id="deal-id-' + dealId + '"data-deal-id="' + dealId + '"data-bs-toggle="modal"data-bs-target="#addImageModal"></i>'));
                         }
                         console.log(data['msg']);
                     }
                 });
             }
         });
+
     }, 100);
 </script>

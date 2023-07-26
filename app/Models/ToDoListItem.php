@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ToDoListItem extends Model
 {
@@ -11,13 +13,18 @@ class ToDoListItem extends Model
 
     protected $fillable = ['name', 'user_id', 'list_id'];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function list()
+    public function list(): BelongsTo
     {
         return $this->belongsTo(ToDoList::class);
+    }
+
+    public function image(): HasOne
+    {
+        return $this->hasOne(ListItemImage::class, 'list_item_id');
     }
 }

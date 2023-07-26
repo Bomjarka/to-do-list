@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/create-list', [ToDoListController::class, 'createList'])->name('create-list');
-Route::post('/create-deal', [ToDoListController::class, 'createDeal'])->name('create-deal');
-Route::post('/remove-deal', [ToDoListController::class, 'removeDeal'])->name('remove-deal');
-Route::post('/update-deal', [ToDoListController::class, 'updateDeal'])->name('update-deal');
+Route::post('/create-deal', [ToDoListController::class, 'createToDoListItem'])->name('create-deal');
+Route::post('/remove-deal', [ToDoListController::class, 'removeToDoListItem'])->name('remove-deal');
+Route::post('/update-deal', [ToDoListController::class, 'updateToDoListItem'])->name('update-deal');
+Route::post('/add-image', [ToDoListController::class, 'addImage'])->name('add-image');

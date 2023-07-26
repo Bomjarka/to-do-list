@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
 
 class TestCommand extends Command
@@ -26,7 +25,5 @@ class TestCommand extends Command
      */
     public function handle()
     {
-       $user = User::find(1);
-       dd($user->toDoLists);
     }
 }

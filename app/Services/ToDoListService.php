@@ -4,21 +4,22 @@ namespace App\Services;
 
 use App\Models\ToDoList;
 use App\Models\ToDoListItem;
+use App\Models\User;
 
 class ToDoListService
 {
     /**
      * @param string $name
-     * @param int $userId
+     * @param User $user
      * @param array $deals
      * @return mixed
      */
-    public function createToDoList(string $name, int $userId, array $deals): mixed
+    public function createToDoList(string $name, User $user, array $deals): mixed
     {
-        $toDoList = ToDoList::create(['name' => $name, 'user_id' => $userId]);
+        $toDoList = ToDoList::create(['name' => $name, 'user_id' => $user->id]);
         if (!empty($deals)) {
             foreach ($deals as $deal) {
-                ToDoListItem::create(['name' => $deal, 'user_id' => $userId, 'list_id' => $toDoList->id]);
+                ToDoListItem::create(['name' => $deal, 'user_id' => $user->id, 'list_id' => $toDoList->id]);
             }
         }
 
@@ -28,38 +29,32 @@ class ToDoListService
 
     /**
      * @param string $name
-     * @param int $userId
-     * @param int $listId
+     * @param User $user
+     * @param ToDoList $toDoList
      * @return mixed
      */
-    public function createDeal(string $name, int $userId, int $listId): mixed
+    public function createToDoListItem(string $name, User $user, ToDoList $toDoList): mixed
     {
-      return ToDoListItem::create(['name' => $name, 'user_id' => $userId, 'list_id' => $listId]);
+        return ToDoListItem::create(['name' => $name, 'user_id' => $user->id, 'list_id' => $toDoList->id]);
     }
 
     /**
-     * @param int $dealId
+     * @param ToDoListItem $toDoListItem
      * @return void
      */
-    public function removeDeal(int $dealId): void
+    public function removeToDoListItem(ToDoListItem $toDoListItem): void
     {
-        $toDoListItem = ToDoListItem::find($dealId);
-        if ($toDoListItem) {
-            $toDoListItem->delete();
-        }
+        $toDoListItem->delete();
     }
 
     /**
      * @param string $newName
-     * @param int $dealId
+     * @param ToDoListItem $toDoListItem
      * @return void
      */
-    public function updateDeal(string $newName, int $dealId): void
+    public function updateToDoListItem(string $newName, ToDoListItem $toDoListItem): void
     {
-        $toDoListItem = ToDoListItem::find($dealId);
-        if ($toDoListItem) {
-            $toDoListItem->name = $newName;
-            $toDoListItem->save();
-        }
+        $toDoListItem->name = $newName;
+        $toDoListItem->save();
     }
 }
