@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\TagController;
 use App\Http\Controllers\Web\ToDoListController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,5 +24,5 @@ Auth::routes();
 Route::middleware('auth')->group(static function () {
     Route::get('/todo-lists', [ToDoListController::class, 'index'])->name('todo-lists-index');
     Route::get('/todo-lists/{todolist}', [ToDoListController::class, 'list'])->name('todo-list');
-
+    Route::get('/tags', [TagController::class, 'index'])->name('tags-index');
 });

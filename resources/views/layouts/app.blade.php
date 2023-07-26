@@ -39,6 +39,9 @@
                         <a class="nav-link" href="{{ route('todo-lists-index') }}">
                             {{ __('Your lists') }}
                         </a>
+                        <a class="nav-link" href="{{ route('tags-index') }}">
+                            {{ __('Tags') }}
+                        </a>
                     @endif
                 </ul>
 

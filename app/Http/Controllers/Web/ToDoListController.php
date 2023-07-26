@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tag;
 use App\Models\ToDoList;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -23,6 +24,8 @@ class ToDoListController extends Controller
 
     public function list(ToDoList $todolist)
     {
-        return view('todolist', ['toDoList' => $todolist]);
+        $tags = Tag::all();
+
+        return view('todolist', ['toDoList' => $todolist, 'tags' => $tags]);
     }
 }

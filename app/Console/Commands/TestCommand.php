@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Tag;
+use App\Models\ToDoListItem;
 use Illuminate\Console\Command;
 
 class TestCommand extends Command
@@ -25,5 +27,9 @@ class TestCommand extends Command
      */
     public function handle()
     {
+        $item = ToDoListItem::find(15);
+        $tagNames = $item->getTags()->pluck('name');
+        dd($tagNames->implode(','));
+
     }
 }

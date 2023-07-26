@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tag;
 use App\Models\ToDoList;
 use App\Models\ToDoListItem;
 use App\Models\User;
 use App\Services\ImageService;
+use App\Services\TagService;
 use App\Services\ToDoListService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -92,9 +94,9 @@ class ToDoListController extends Controller
      * @return JsonResponse
      */
     public function removeToDoListItem(
-        Request $request,
+        Request         $request,
         ToDoListService $toDoListService,
-        ImageService $imageService
+        ImageService    $imageService
     ): JsonResponse
     {
         $toDoListItemId = $request->dealId;
@@ -133,11 +135,12 @@ class ToDoListController extends Controller
         $toDoListItem = ToDoListItem::find($toDoListItemId);
         if ($toDoListItem) {
             $toDoListService->updateToDoListItem($newName, $toDoListItem);
+
             return response()->json([
                 'msg' => 'OK',
                 'data' => [
-                    'dealId' => $toDoListItemId,
-                    'dealName' => $newName,
+                    'dealId' => $toDoListItem->id,
+                    'dealName' => $toDoListItem->name,
                 ]
             ]);
         }
@@ -186,5 +189,87 @@ class ToDoListController extends Controller
                 'msg' => 'OK',
             ]);
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param TagService $tagService
+     * @return JsonResponse
+     */
+    public function addItemTags(Request $request, TagService $tagService): JsonResponse
+    {
+        $listItemId = $request->listId;
+        $toDoListItem = ToDoListItem::find($listItemId);
+        $listTags = $toDoListItem->listItemTags;
+        if (!$toDoListItem) {
+            return response()->json([
+                'msg' => 'FALIED ListItem ' . $listItemId . ' NOT FOUND',
+                'data' => [
+                    'dealId' => $listItemId,
+                ]
+            ]);
+        }
+        $tagIds = $request->tags;
+        $wrongIds = [];
+        $listItemTags = [];
+        foreach ($tagIds as $tagId) {
+            $tag = Tag::find($tagId);
+            if ($tag) {
+                if ($listTags->contains('tag_id', $tagId)) {
+                    continue;
+                }
+                $listItemTag = $tagService->addTagToListItem($tag, $toDoListItem);
+                $listItemTags[] = $listItemTag->id;
+
+            } else {
+                $wrongIds[] = $tagId;
+            }
+        }
+
+        return response()->json([
+            'msg' => 'OK',
+            'data' => [
+                'dealId' => $toDoListItem->id,
+                'list_item_tag_ids' => $listItemTags,
+                'wrong_tag_ids' => $wrongIds
+            ]
+        ]);
+    }
+
+    public function removeItemTags(Request $request, TagService $tagService)
+    {
+        $listItemId = $request->listId;
+        $toDoListItem = ToDoListItem::find($listItemId);
+        $listTags = $toDoListItem->listItemTags;
+
+        if (!$toDoListItem) {
+            return response()->json([
+                'msg' => 'FALIED ListItem ' . $listItemId . ' NOT FOUND',
+                'data' => [
+                    'dealId' => $listItemId,
+                ]
+            ]);
+        }
+        $tagIds = $request->tags;
+        $wrongIds = [];
+        foreach ($tagIds as $tagId) {
+            $tag = Tag::find($tagId);
+            if ($tag) {
+                if (!$listTags->contains('tag_id', $tagId)) {
+                    continue;
+                }
+                $tagService->removeTagFromListItem($tag, $toDoListItem);
+            } else {
+                $wrongIds[] = $tagId;
+            }
+        }
+
+        return response()->json([
+            'msg' => 'OK',
+            'data' => [
+                'dealId' => $toDoListItem->id,
+                'wrong_tag_ids' => $wrongIds
+            ]
+        ]);
     }
 }
