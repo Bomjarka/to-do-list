@@ -14,33 +14,34 @@
                                 <h5>No deals</h5>
                             @else
                                 <ul class="list-group list-group-numbered">
-                                    @foreach($toDoList->listItems->sortBy('created_at') as $deal)
-                                        <li class="list-group-item" id="deal-item-{{ $deal->id }}"
-                                            data-deal-id="{{ $deal->id }}">
-                                            <span>{{ $deal->name }}</span>
-                                            <i class="fa-solid fa-pencil" id="deal-edit-id-{{ $deal->id }}"></i>
-                                            <i class="fa-solid fa-trash-can" id="deal-trash-id-{{ $deal->id }}"></i>
-                                            @if($deal->image)
-                                                <a href="{{ url('storage/images/' . $deal->image->name) }}"
+                                    @foreach($toDoList->listItems->sortBy('created_at') as $toDoListItem)
+                                        <li class="list-group-item d-flex flex-row justify-content-between align-items-center" id="deal-item-{{ $toDoListItem->id }}"
+                                            data-deal-id="{{ $toDoListItem->id }}">
+                                            <span>{{ $toDoListItem->name }}</span>
+                                            <i class="fa-solid fa-pencil" id="deal-edit-id-{{ $toDoListItem->id }}"></i>
+                                            <i class="fa-solid fa-trash-can" id="deal-trash-id-{{ $toDoListItem->id }}"></i>
+                                            @if($toDoListItem->image)
+                                                <a href="{{ url('storage/images/' . $toDoListItem->image->name) }}"
                                                    target="_blank">
-                                                    <img src="{{ url('storage/images/' . $deal->image->preview_name) }}"
-                                                         alt="{{ $deal->image->preview_name }}"></a>
+                                                    <img src="{{ url('storage/images/' . $toDoListItem->image->preview_name) }}"
+                                                         alt="{{ $toDoListItem->image->preview_name }}"></a>
 
                                             @endif
-                                            <i class="fa-solid fa-image" id="deal-image-id-{{ $deal->id }}"
+                                            <i class="fa-solid fa-image" id="deal-image-id-{{ $toDoListItem->id }}"
                                                data-bs-toggle="modal"
                                                data-bs-target="#addImageModal"></i>
+                                            <h5><i class="fa-solid fa-hashtag"></i>Tags: {{ $toDoListItem->tags() }}</h5>
                                         </li>
-                                        <label for="edit-deal-id-{{ $deal->id }}" hidden="">Edit deal:</label>
+                                        <label for="edit-deal-id-{{ $toDoListItem->id }}" hidden="">Edit deal:</label>
                                         <input
-                                            type="text" class="form-control" id="edit-deal-id-{{ $deal->id }}"
+                                            type="text" class="form-control" id="edit-deal-id-{{ $toDoListItem->id }}"
                                             aria-describedby="basic-addon3"
-                                            value="{{ $deal->name }}" hidden="">
+                                            value="{{ $toDoListItem->name }}" hidden="">
                                         <button type="button" class="btn btn-primary edit-deal"
-                                                id="edit-deal-button-{{ $deal->id }}" hidden>Save
+                                                id="edit-deal-button-{{ $toDoListItem->id }}" hidden>Save
                                         </button>
                                         <button type="button" class="btn btn-danger edit-deal"
-                                                id="cancel-edit-deal-button-{{ $deal->id }}" hidden>Cancel
+                                                id="cancel-edit-deal-button-{{ $toDoListItem->id }}" hidden>Cancel
                                         </button>
                                     @endforeach
                                 </ul>
