@@ -68,10 +68,10 @@ class ImageService
      * @param ToDoListItem $deal
      * @return void
      */
-    private function removeImage(ToDoListItem $deal): void
+    public function removeImage(ToDoListItem $toDoListItem): void
     {
-        Storage::disk('images')->delete($deal->image->name);
-        Storage::disk('images')->delete($deal->image->preview_name);
-        $deal->image->delete();
+        Storage::disk('images')->delete($toDoListItem->image->name);
+        Storage::disk('images')->delete($toDoListItem->image->preview_name);
+        $toDoListItem->image->delete();
     }
 }

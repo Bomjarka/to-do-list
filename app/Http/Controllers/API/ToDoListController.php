@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\ToDoList;
 use App\Models\ToDoListItem;
+use App\Models\User;
 use App\Services\ImageService;
 use App\Services\ToDoListService;
 use Illuminate\Http\JsonResponse;
@@ -23,8 +25,17 @@ class ToDoListController extends Controller
     {
         $name = $request->listName;
         $userId = $request->userId;
-        $deals = $request->deals;
-        $createdList = $toDoListService->createToDoList($name, $userId, $deals);
+        $toDoListItems = $request->deals;
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json([
+                'msg' => 'FAILED, NO USER ' . $userId . ' FOUND',
+            ]);
+        }
+
+        $createdList = $toDoListService->createToDoList($name, $user, $toDoListItems);
 
         return response()->json([
             'msg' => 'OK',
@@ -42,35 +53,70 @@ class ToDoListController extends Controller
      * @param ToDoListService $toDoListService
      * @return JsonResponse
      */
-    public function createDeal(Request $request, ToDoListService $toDoListService): JsonResponse
+    public function createToDoListItem(Request $request, ToDoListService $toDoListService): JsonResponse
     {
         $name = $request->dealName;
         $userId = $request->userId;
         $listId = $request->listId;
-        $createdDeal = $toDoListService->createDeal($name, $userId, $listId);
+
+        $user = User::find($userId);
+        if (!$user) {
+            return response()->json([
+                'msg' => 'FAILED, NO USER ' . $userId . ' FOUND',
+            ]);
+        }
+
+        $toDoList = ToDoList::find($listId);
+        if ($toDoList) {
+            $createdToDoListItem = $toDoListService->createToDoListItem($name, $user, $toDoList);
+
+            return response()->json([
+                'msg' => 'OK',
+                'data' => [
+                    'dealName' => $createdToDoListItem->name,
+                    'dealId' => $createdToDoListItem->id,
+                ]
+            ]);
+        }
 
         return response()->json([
-            'msg' => 'OK',
-            'data' => [
-                'dealName' => $createdDeal->name,
-                'dealId' => $createdDeal->id,
-            ]
+            'msg' => 'FAILED, NO LIST ' . $listId . ' FOUND',
         ]);
+
     }
 
     /**
      * @param Request $request
      * @param ToDoListService $toDoListService
+     * @param ImageService $imageService
      * @return JsonResponse
      */
-    public function removeDeal(Request $request, ToDoListService $toDoListService): JsonResponse
+    public function removeToDoListItem(
+        Request $request,
+        ToDoListService $toDoListService,
+        ImageService $imageService
+    ): JsonResponse
     {
-        $dealId = $request->dealId;
-        $toDoListService->removeDeal($dealId);
+        $toDoListItemId = $request->dealId;
+        $toDoListItem = ToDoListItem::find($toDoListItemId);
+        if ($toDoListItem) {
+            if ($toDoListItem->image) {
+                $imageService->removeImage($toDoListItem);
+            }
+            $toDoListService->removeToDoListItem($toDoListItem);
+
+            return response()->json([
+                'msg' => 'OK',
+                'data' => [
+                    'dealId' => $toDoListItemId,
+                ]
+            ]);
+        }
+
         return response()->json([
-            'msg' => 'OK',
+            'msg' => 'FAIL',
             'data' => [
-                'dealId' => $dealId,
+                'dealId' => $toDoListItemId,
             ]
         ]);
     }
@@ -80,15 +126,26 @@ class ToDoListController extends Controller
      * @param ToDoListService $toDoListService
      * @return JsonResponse
      */
-    public function updateDeal(Request $request, ToDoListService $toDoListService): JsonResponse
+    public function updateToDoListItem(Request $request, ToDoListService $toDoListService): JsonResponse
     {
         $newName = $request->newName;
-        $dealId = $request->dealId;
-        $toDoListService->updateDeal($newName, $dealId);
+        $toDoListItemId = $request->dealId;
+        $toDoListItem = ToDoListItem::find($toDoListItemId);
+        if ($toDoListItem) {
+            $toDoListService->updateToDoListItem($newName, $toDoListItem);
+            return response()->json([
+                'msg' => 'OK',
+                'data' => [
+                    'dealId' => $toDoListItemId,
+                    'dealName' => $newName,
+                ]
+            ]);
+        }
+
         return response()->json([
-            'msg' => 'OK',
+            'msg' => 'FALIED',
             'data' => [
-                'dealId' => $dealId,
+                'dealId' => $toDoListItemId,
                 'dealName' => $newName,
             ]
         ]);
