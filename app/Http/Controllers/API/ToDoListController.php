@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\ToDoList;
 use App\Models\ToDoListItem;
+use App\Services\ImageService;
 use App\Services\ToDoListService;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ToDoListController extends Controller
 {
+    private const ACCEPTED_FILES = ['jpeg', 'png'];
+
     /**
      * @param Request $request
      * @param ToDoListService $toDoListService
@@ -37,6 +37,11 @@ class ToDoListController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param ToDoListService $toDoListService
+     * @return JsonResponse
+     */
     public function createDeal(Request $request, ToDoListService $toDoListService): JsonResponse
     {
         $name = $request->dealName;
@@ -53,7 +58,12 @@ class ToDoListController extends Controller
         ]);
     }
 
-    public function removeDeal(Request $request, ToDoListService $toDoListService)
+    /**
+     * @param Request $request
+     * @param ToDoListService $toDoListService
+     * @return JsonResponse
+     */
+    public function removeDeal(Request $request, ToDoListService $toDoListService): JsonResponse
     {
         $dealId = $request->dealId;
         $toDoListService->removeDeal($dealId);
@@ -64,7 +74,13 @@ class ToDoListController extends Controller
             ]
         ]);
     }
-    public function updateDeal(Request $request, ToDoListService $toDoListService)
+
+    /**
+     * @param Request $request
+     * @param ToDoListService $toDoListService
+     * @return JsonResponse
+     */
+    public function updateDeal(Request $request, ToDoListService $toDoListService): JsonResponse
     {
         $newName = $request->newName;
         $dealId = $request->dealId;
@@ -76,5 +92,42 @@ class ToDoListController extends Controller
                 'dealName' => $newName,
             ]
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param ImageService $imageService
+     * @return JsonResponse|void
+     */
+    public function addImage(Request $request, ImageService $imageService)
+    {
+        $dealId = $request->dealId;
+        $deal = ToDoListItem::find($dealId);
+        if ($deal) {
+            $fileData = $request->fileData['file'];
+            [, $data] = explode(';', $fileData);
+            [, $data] = explode(',', $data);
+            $fileData = base64_decode($data);
+            $fileMimeType = finfo_buffer(finfo_open(), $fileData, FILEINFO_MIME_TYPE);
+
+            $fileType = '';
+            if ($fileMimeType === 'image/jpeg' || $fileMimeType === 'image/jpg') {
+                $fileType = 'jpeg';
+            } elseif ($fileMimeType === 'image/png') {
+                $fileType = 'png';
+            }
+            if (in_array($fileType, self::ACCEPTED_FILES)) {
+                $fileName = Str::random() . '.' . $fileType;
+                if ($deal->image) {
+                    $imageService->updateImage($fileName, $fileData, $deal);
+                } else {
+                    $imageService->createImage($fileName, $fileData, $deal);
+                }
+            }
+
+            return response()->json([
+                'msg' => 'OK',
+            ]);
+        }
     }
 }

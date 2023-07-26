@@ -21,15 +21,29 @@
                                                data-deal-id="{{ $deal->id }}"></i>
                                             <i class="fa-solid fa-trash-can" id="deal-id-{{ $deal->id }}"
                                                data-deal-id="{{ $deal->id }}"></i>
+                                            @if($deal->image)
+                                                <a href="{{ url('storage/images/' . $deal->image->name) }}"
+                                                   target="_blank">
+                                                    <img src="{{ url('storage/images/' . $deal->image->preview_name) }}"
+                                                         alt="{{ $deal->image->preview_name }}"></a>
+
+                                            @endif
+                                            <i class="fa-solid fa-image" id="deal-id-{{ $deal->id }}"
+                                               data-deal-id="{{ $deal->id }}"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#addImageModal"></i>
                                         </li>
                                         <label for="edit-deal-id-{{ $deal->id }}" hidden="">Edit deal:</label>
                                         <input
                                             type="text" class="form-control" id="edit-deal-id-{{ $deal->id }}"
                                             aria-describedby="basic-addon3"
                                             value="{{ $deal->name }}" hidden="">
-                                        <button type="button" class="btn btn-primary edit-deal" id="edit-deal-button-{{ $deal->id }}" hidden>Save</button>
-                                        <button type="button" class="btn btn-danger edit-deal" id="cancel-edit-deal-button-{{ $deal->id }}" hidden>Cancel</button>
-
+                                        <button type="button" class="btn btn-primary edit-deal"
+                                                id="edit-deal-button-{{ $deal->id }}" hidden>Save
+                                        </button>
+                                        <button type="button" class="btn btn-danger edit-deal"
+                                                id="cancel-edit-deal-button-{{ $deal->id }}" hidden>Cancel
+                                        </button>
                                     @endforeach
                                 </ul>
                             @endif
@@ -42,14 +56,14 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
+    <!-- Modal add deal-->
     <div class="modal fade" id="createDealModal" tabindex="-1" aria-labelledby="createDealModalLabel"
          aria-hidden="true">
         <form data-toggle="validator" role="form">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="createListModalLabel">New Deal</h5>
+                        <h5 class="modal-title" id="createDealModalLabel">New Deal</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -67,10 +81,90 @@
             </div>
         </form>
     </div>
+    <!-- Modal add image-->
+    <div class="modal fade" id="addImageModal" tabindex="-1" aria-labelledby="addImageModalLabel"
+         aria-hidden="true">
+        <form data-toggle="validator" role="form">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addImageModalLabel">Uploading image</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="file-drop-area">
+                            <span class="choose-file-button">Choose image:</span>
+                            <span class="file-message">or drag and drop file here</span>
+                            <input type="file" class="file-input" accept=".jpg,.jpeg,.png">
+                        </div>
+                        <div id="divImageMediaPreview">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary add-image">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 @endsection
 <script type="module">
     setTimeout(function () {
+
+        let test = '';
+        $('.fa-image').on('click', function () {
+            test = $(this).data('deal-id');
+
+        })
+
+        $('.file-input').on('change', function () {
+            let data = '';
+            if (typeof (FileReader) != "undefined") {
+                let dvPreview = $("#divImageMediaPreview");
+                dvPreview.html("");
+                $($(this)[0].files).each(function () {
+                    let file = $(this);
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        let img = $("<img />");
+                        img.attr("style", "width: 150px; height:100px; padding: 10px");
+                        img.attr("src", e.target.result);
+                        dvPreview.append(img);
+                        data = {'file': reader.result};
+                    }
+                    reader.readAsDataURL(file[0]);
+                });
+            } else {
+                alert("This browser does not support HTML5 FileReader.");
+            }
+            $('.add-image').on('click', function () {
+                $.ajax({
+                    url: '{{ route('add-image') }}',
+                    method: 'post',
+                    data: {
+                        fileData: data,
+                        dealId: test
+                    },
+                    success: function (data) {
+                        if (data['msg'] === 'OK') {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
+        });
+
+
         $('.fa-pencil').hover(
+            function () {
+                $(this).addClass('fa-2xl')
+            },
+            function () {
+                $(this).removeClass('fa-2xl')
+            });
+
+        $('.fa-image').hover(
             function () {
                 $(this).addClass('fa-2xl')
             },
