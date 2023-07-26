@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Arr;
 
 class ToDoListItem extends Model
 {
@@ -26,5 +27,12 @@ class ToDoListItem extends Model
     public function image(): HasOne
     {
         return $this->hasOne(ListItemImage::class, 'list_item_id');
+    }
+
+    public function tags()
+    {
+//        $tags = Arr::flatten(json_decode($this->tags));
+//
+//        return implode(',', $tags);
     }
 }

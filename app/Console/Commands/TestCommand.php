@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Tag;
 use Illuminate\Console\Command;
 
 class TestCommand extends Command
@@ -25,5 +26,9 @@ class TestCommand extends Command
      */
     public function handle()
     {
+        $tags = Tag::all();
+        if ($tags->isEmpty()) {
+            dd('h');
+        }
     }
 }

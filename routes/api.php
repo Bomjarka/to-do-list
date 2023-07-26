@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\ToDoListController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,7 @@ Route::post('/create-deal', [ToDoListController::class, 'createToDoListItem'])->
 Route::post('/remove-deal', [ToDoListController::class, 'removeToDoListItem'])->name('remove-deal');
 Route::post('/update-deal', [ToDoListController::class, 'updateToDoListItem'])->name('update-deal');
 Route::post('/add-image', [ToDoListController::class, 'addImage'])->name('add-image');
+
+Route::post('/create-tag', [TagController::class, 'createTag'])->name('create-tag');
+Route::post('/remove-tag', [TagController::class, 'removeTag'])->name('remove-tag');
+Route::post('/update-tag', [TagController::class, 'updateTag'])->name('update-tag');
