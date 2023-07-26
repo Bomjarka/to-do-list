@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ToDoListController;
+use App\Http\Controllers\API\ToDoListController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

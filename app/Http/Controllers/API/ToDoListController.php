@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\ToDoList;
 use App\Models\ToDoListItem;
 use App\Services\ToDoListService;
@@ -13,22 +14,6 @@ use Illuminate\Http\Request;
 
 class ToDoListController extends Controller
 {
-    /**
-     * @return Application|Factory|View|\Illuminate\Foundation\Application
-     */
-    public function index(): View|\Illuminate\Foundation\Application|Factory|Application
-    {
-        $user = auth()->user();
-        $userLists = $user->toDoLists->sortBy('created_at');
-
-        return view('todolists', ['userLists' => $userLists]);
-    }
-
-    public function list(ToDoList $todolist)
-    {
-        return view('todolist', ['toDoList' => $todolist]);
-    }
-
     /**
      * @param Request $request
      * @param ToDoListService $toDoListService

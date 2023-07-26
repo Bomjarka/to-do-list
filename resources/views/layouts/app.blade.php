@@ -35,7 +35,11 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav me-auto">
-
+                    @if(auth()->user())
+                        <a class="nav-link" href="{{ route('todo-lists-index') }}">
+                            {{ __('Your lists') }}
+                        </a>
+                    @endif
                 </ul>
 
                 <!-- Right Side Of Navbar -->
