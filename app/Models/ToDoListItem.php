@@ -29,10 +29,12 @@ class ToDoListItem extends Model
         return $this->hasOne(ListItemImage::class, 'list_item_id');
     }
 
-    public function tags()
+    public function listItemTags()
     {
-//        $tags = Arr::flatten(json_decode($this->tags));
-//
-//        return implode(',', $tags);
+        return $this->hasMany(ListItemTags::class, 'list_item_id');
+    }
+    public function getTags()
+    {
+        return Tag::whereIn('id', ListItemTags::whereListItemId($this->id)->get()->pluck('tag_id'))->get();
     }
 }

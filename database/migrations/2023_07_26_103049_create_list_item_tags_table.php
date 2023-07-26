@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('list_item_tags', function (Blueprint $table) {
             $table->id();
-            $table->string('preview_name');
             $table->foreignId('list_item_id')->constrained('to_do_list_items')->onDelete('cascade');
             $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
             $table->timestamps();

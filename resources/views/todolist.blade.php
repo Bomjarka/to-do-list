@@ -15,22 +15,34 @@
                             @else
                                 <ul class="list-group list-group-numbered">
                                     @foreach($toDoList->listItems->sortBy('created_at') as $toDoListItem)
-                                        <li class="list-group-item d-flex flex-row justify-content-between align-items-center" id="deal-item-{{ $toDoListItem->id }}"
+                                        <li class="list-group-item d-flex flex-row justify-content-between align-items-center"
+                                            id="deal-item-{{ $toDoListItem->id }}"
                                             data-deal-id="{{ $toDoListItem->id }}">
                                             <span>{{ $toDoListItem->name }}</span>
                                             <i class="fa-solid fa-pencil" id="deal-edit-id-{{ $toDoListItem->id }}"></i>
-                                            <i class="fa-solid fa-trash-can" id="deal-trash-id-{{ $toDoListItem->id }}"></i>
+                                            <i class="fa-solid fa-trash-can"
+                                               id="deal-trash-id-{{ $toDoListItem->id }}"></i>
                                             @if($toDoListItem->image)
                                                 <a href="{{ url('storage/images/' . $toDoListItem->image->name) }}"
                                                    target="_blank">
-                                                    <img src="{{ url('storage/images/' . $toDoListItem->image->preview_name) }}"
-                                                         alt="{{ $toDoListItem->image->preview_name }}"></a>
+                                                    <img
+                                                        src="{{ url('storage/images/' . $toDoListItem->image->preview_name) }}"
+                                                        alt="{{ $toDoListItem->image->preview_name }}"></a>
 
                                             @endif
                                             <i class="fa-solid fa-image" id="deal-image-id-{{ $toDoListItem->id }}"
                                                data-bs-toggle="modal"
                                                data-bs-target="#addImageModal"></i>
-                                            <h5><i class="fa-solid fa-hashtag"></i>Tags: {{ $toDoListItem->tags() }}</h5>
+                                            <h5>
+                                                <i class="fa-solid fa-hashtag"></i> Tags: {{ $toDoListItem->getTags()->pluck('name')->implode(',') }}
+                                                <select id="tags-select" class="form-select" multiple aria-label="multiple select example">
+                                                    @foreach($tags as $tag)
+                                                        <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <button type="button" class="btn btn-success edit-deal" id="add-tags" disabled>Add tags</button>
+                                                <button type="button" class="btn btn-danger edit-deal" id="remove-tags" disabled>Remove tags</button>
+                                            </h5>
                                         </li>
                                         <label for="edit-deal-id-{{ $toDoListItem->id }}" hidden="">Edit deal:</label>
                                         <input
@@ -263,6 +275,61 @@
                     }
                 });
             }
+        });
+
+
+        $('#tags-select').on('change', function () {
+            $('#add-tags').removeAttr('disabled');
+        });
+        $('#add-tags').on('click', function () {
+            let selectedTagIds = $('#tags-select').val();
+            if (selectedTagIds.length === 0) {
+                alert('You didn\'t select any tag');
+            } else {
+                let listItemId =  $(this).parent().parent().data('deal-id')
+                $.ajax({
+                    url: '{{ route('add-item-tags') }}',
+                    method: 'post',
+                    data: {
+                        tags: selectedTagIds,
+                        listId: listItemId,
+                    },
+                    success: function (data) {
+                        if (data['msg'] === 'OK') {
+                            window.location.reload();
+                           }
+                        console.log(data['msg']);
+                    }
+                });
+            }
+            console.log(selectedTagIds);
+        });
+
+        $('#tags-select').on('change', function () {
+            $('#remove-tags').removeAttr('disabled');
+        });
+        $('#remove-tags').on('click', function () {
+            let selectedTagIds = $('#tags-select').val();
+            if (selectedTagIds.length === 0) {
+                alert('You didn\'t select any tag');
+            } else {
+                let listItemId =  $(this).parent().parent().data('deal-id')
+                $.ajax({
+                    url: '{{ route('remove-item-tags') }}',
+                    method: 'post',
+                    data: {
+                        tags: selectedTagIds,
+                        listId: listItemId,
+                    },
+                    success: function (data) {
+                        if (data['msg'] === 'OK') {
+                            window.location.reload();
+                        }
+                        console.log(data['msg']);
+                    }
+                });
+            }
+            console.log(selectedTagIds);
         });
 
     }, 100);

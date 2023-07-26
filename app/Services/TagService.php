@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\ListItemTags;
 use App\Models\Tag;
-use App\Models\User;
+use App\Models\ToDoListItem;
 
 class TagService
 {
@@ -36,5 +37,25 @@ class TagService
         $tag->delete();
     }
 
+    /**
+     * @param Tag $tag
+     * @param ToDoListItem $listItem
+     * @return mixed
+     */
+    public function addTagToListItem(Tag $tag, ToDoListItem $listItem): mixed
+    {
+        return ListItemTags::create(['list_item_id' => $listItem->id, 'tag_id' => $tag->id]);
+    }
 
+    /**
+     * @param Tag $tag
+     * @param ToDoListItem $listItem
+     * @return void
+     */
+    public function removeTagFromListItem(Tag $tag, ToDoListItem $listItem): void
+    {
+        ListItemTags::whereListItemId($listItem->id)
+            ->whereTagId($tag->id)
+            ->first()->delete();
+    }
 }
