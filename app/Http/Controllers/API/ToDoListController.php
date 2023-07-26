@@ -136,8 +136,8 @@ class ToDoListController extends Controller
             return response()->json([
                 'msg' => 'OK',
                 'data' => [
-                    'dealId' => $toDoListItemId,
-                    'dealName' => $newName,
+                    'dealId' => $toDoListItem->id,
+                    'dealName' => $toDoListItem->name,
                 ]
             ]);
         }
