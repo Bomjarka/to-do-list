@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ToDoListItem extends Model
@@ -30,6 +31,15 @@ class ToDoListItem extends Model
     }
 
     /**
+     * @return HasMany
+     */
+    public function listItemTags(): HasMany
+    {
+        return $this->hasMany(ListItemTags::class, 'list_item_id');
+    }
+
+    /**
+     * Return collection of LitItemTags
      * @return mixed
      */
     public function getTags(): Collection

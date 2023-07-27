@@ -22,8 +22,12 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::middleware('auth')->group(static function () {
-    Route::get('/todo-lists', [ToDoListController::class, 'index'])->name('todo-lists-index');
-    Route::get('/todo-lists/{toDoList}', [ToDoListController::class, 'list'])->name('todo-list');
+    Route::prefix('/user/{user}')->group(static function () {
+        Route::get('/todo-lists', [ToDoListController::class, 'index'])->name('todo-lists-index');
+        Route::get('/todo-lists/{toDoList}', [ToDoListController::class, 'list'])->name('todo-list');
+        Route::post('/todo-lists/{toDoList}/search', [ToDoListController::class, 'search'])->name('search');
+        Route::post('/todo-lists/share-list', [ToDoListController::class, 'shareListToUsers'])->name('share-list');
+    });
     Route::get('/tags', [TagController::class, 'index'])->name('tags-index');
-    Route::post('/todo-lists/{toDoList}/search', [ToDoListController::class, 'search'])->name('search');
+
 });

@@ -7,10 +7,10 @@
                     <div class="card-header">
                         <div class=" d-flex justify-content-between">
                             <h5>{{ $toDoList->name }}</h5>
-                            <a href="{{ route('todo-lists-index') }}"><h5>Back to ToDoLists</h5></a>
+                            <a href="{{ route('todo-lists-index', $user) }}"><h5>Back to ToDoLists</h5></a>
                         </div>
                         <div>
-                            <form type="" method="POST" action="{{ route('search', $toDoList->id) }}">
+                            <form type="" method="POST" action="{{ route('search', [$user, $toDoList->id]) }}">
                                 @csrf
                                 <div class="border rounded border-1 border-secondary p-2">
                                     <h5>Search</h5>
