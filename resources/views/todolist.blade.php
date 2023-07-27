@@ -34,14 +34,20 @@
                                                data-bs-toggle="modal"
                                                data-bs-target="#addImageModal"></i>
                                             <h5>
-                                                <i class="fa-solid fa-hashtag"></i> Tags: {{ $toDoListItem->getTags()->pluck('name')->implode(',') }}
-                                                <select id="tags-select" class="form-select" multiple aria-label="multiple select example">
+                                                <i class="fa-solid fa-hashtag"></i>
+                                                Tags: {{ $toDoListItem->getTags()->pluck('name')->implode(',') }}
+                                                <select id="tags-select-{{ $toDoListItem->id }}" class="form-select select-tags"
+                                                        multiple aria-label="multiple select example">
                                                     @foreach($tags as $tag)
                                                         <option value="{{ $tag->id }}">{{ $tag->name }}</option>
                                                     @endforeach
                                                 </select>
-                                                <button type="button" class="btn btn-success edit-deal" id="add-tags" disabled>Add tags</button>
-                                                <button type="button" class="btn btn-danger edit-deal" id="remove-tags" disabled>Remove tags</button>
+                                                <button type="button" class="btn btn-success add-tags-to-list-item" id="add-tags-{{ $toDoListItem->id }}"
+                                                        disabled>Add tags
+                                                </button>
+                                                <button type="button" class="btn btn-danger remove-tags-from-list-item" id="remove-tags-{{ $toDoListItem->id }}"
+                                                        disabled>Remove tags
+                                                </button>
                                             </h5>
                                         </li>
                                         <label for="edit-deal-id-{{ $toDoListItem->id }}" hidden="">Edit deal:</label>
@@ -268,7 +274,6 @@
                         if (data['msg'] === 'OK') {
                             let dealName = data.data.dealName
                             let dealId = data.data.dealId
-                            // $('.list-group').append($('<li class="list-group-item">' + dealName + '</li>'));
                             $('.list-group').append($('<li class="list-group-item">' + dealName + '<i class="fa-solid fa-pencil" id="deal-id-' + dealId + '" data-deal-id="' + dealId + '"></i><i class="fa-solid fa-trash-can" id="deal-id-' + dealId + '" data-deal-id="' + dealId + '"></i></li><i class="fa-solid fa-image" id="deal-id-' + dealId + '"data-deal-id="' + dealId + '"data-bs-toggle="modal"data-bs-target="#addImageModal"></i>'));
                         }
                         console.log(data['msg']);
@@ -278,15 +283,19 @@
         });
 
 
-        $('#tags-select').on('change', function () {
-            $('#add-tags').removeAttr('disabled');
+        let listItemId = '';
+        $('.select-tags').on('change', function () {
+            let listItemId = $(this).parent().parent().data('deal-id')
+            $('#add-tags-' + listItemId).removeAttr('disabled');
+            $('#remove-tags-' + listItemId).removeAttr('disabled');
         });
-        $('#add-tags').on('click', function () {
-            let selectedTagIds = $('#tags-select').val();
+        $('.add-tags-to-list-item').on('click', function () {
+            let listItemId = $(this).parent().parent().data('deal-id')
+            let selectedTagIds = $('#tags-select-' + listItemId).val();
             if (selectedTagIds.length === 0) {
                 alert('You didn\'t select any tag');
             } else {
-                let listItemId =  $(this).parent().parent().data('deal-id')
+                let listItemId = $(this).parent().parent().data('deal-id')
                 $.ajax({
                     url: '{{ route('add-item-tags') }}',
                     method: 'post',
@@ -297,7 +306,7 @@
                     success: function (data) {
                         if (data['msg'] === 'OK') {
                             window.location.reload();
-                           }
+                        }
                         console.log(data['msg']);
                     }
                 });
@@ -305,15 +314,13 @@
             console.log(selectedTagIds);
         });
 
-        $('#tags-select').on('change', function () {
-            $('#remove-tags').removeAttr('disabled');
-        });
-        $('#remove-tags').on('click', function () {
-            let selectedTagIds = $('#tags-select').val();
+        $('.remove-tags-from-list-item').on('click', function () {
+            let listItemId = $(this).parent().parent().data('deal-id')
+            let selectedTagIds = $('#tags-select-' + listItemId).val();
             if (selectedTagIds.length === 0) {
                 alert('You didn\'t select any tag');
             } else {
-                let listItemId =  $(this).parent().parent().data('deal-id')
+                let listItemId = $(this).parent().parent().data('deal-id')
                 $.ajax({
                     url: '{{ route('remove-item-tags') }}',
                     method: 'post',
