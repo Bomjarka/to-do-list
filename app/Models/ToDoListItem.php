@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Arr;
 
 class ToDoListItem extends Model
 {
@@ -29,11 +29,10 @@ class ToDoListItem extends Model
         return $this->hasOne(ListItemImage::class, 'list_item_id');
     }
 
-    public function listItemTags()
-    {
-        return $this->hasMany(ListItemTags::class, 'list_item_id');
-    }
-    public function getTags()
+    /**
+     * @return mixed
+     */
+    public function getTags(): Collection
     {
         return Tag::whereIn('id', ListItemTags::whereListItemId($this->id)->get()->pluck('tag_id'))->get();
     }
