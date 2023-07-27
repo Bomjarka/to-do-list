@@ -23,6 +23,7 @@ Auth::routes();
 
 Route::middleware('auth')->group(static function () {
     Route::get('/todo-lists', [ToDoListController::class, 'index'])->name('todo-lists-index');
-    Route::get('/todo-lists/{todolist}', [ToDoListController::class, 'list'])->name('todo-list');
+    Route::get('/todo-lists/{toDoList}', [ToDoListController::class, 'list'])->name('todo-list');
     Route::get('/tags', [TagController::class, 'index'])->name('tags-index');
+    Route::post('/todo-lists/{toDoList}/search', [ToDoListController::class, 'search'])->name('search');
 });

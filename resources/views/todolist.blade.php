@@ -4,17 +4,43 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between">
-                        <h5>{{ $toDoList->name }}</h5>
-                        <a href="{{ route('todo-lists-index') }}"><h5>Back to ToDoLists</h5></a>
+                    <div class="card-header">
+                        <div class=" d-flex justify-content-between">
+                            <h5>{{ $toDoList->name }}</h5>
+                            <a href="{{ route('todo-lists-index') }}"><h5>Back to ToDoLists</h5></a>
+                        </div>
+                        <div>
+                            <form type="" method="POST" action="{{ route('search', $toDoList->id) }}">
+                                @csrf
+                                <div class="border rounded border-1 border-secondary p-2">
+                                    <h5>Search</h5>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" placeholder="Deal name like: go shopping"
+                                               aria-describedby="button-addon2" name="search-items">
+                                        <button class="btn btn-outline-secondary" type="submit" id="search-items">Search
+                                        </button>
+                                    </div>
+                                    <label for="tags-search">Chose tags for searching</label>
+                                    <div class="input-group mb-3" id="tags-search">
+                                        <label class="input-group-text" for="search-tags-select">Tags</label>
+                                        <select class="form-select" id="search-tags-select" name="search-tags[]" multiple>
+                                            @foreach($tags as $tag)
+                                                <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
+
                     <div class="card-body">
                         <div class="card-deck ">
-                            @if($toDoList->listItems->isEmpty())
+                            @if($toDoListItems->isEmpty())
                                 <h5>No deals</h5>
                             @else
                                 <ul class="list-group list-group-numbered">
-                                    @foreach($toDoList->listItems->sortBy('created_at') as $toDoListItem)
+                                    @foreach($toDoListItems->sortBy('created_at') as $toDoListItem)
                                         <li class="list-group-item d-flex flex-row justify-content-between align-items-center"
                                             id="deal-item-{{ $toDoListItem->id }}"
                                             data-deal-id="{{ $toDoListItem->id }}">
@@ -36,16 +62,19 @@
                                             <h5>
                                                 <i class="fa-solid fa-hashtag"></i>
                                                 Tags: {{ $toDoListItem->getTags()->pluck('name')->implode(',') }}
-                                                <select id="tags-select-{{ $toDoListItem->id }}" class="form-select select-tags"
+                                                <select id="tags-select-{{ $toDoListItem->id }}"
+                                                        class="form-select select-tags"
                                                         multiple aria-label="multiple select example">
                                                     @foreach($tags as $tag)
                                                         <option value="{{ $tag->id }}">{{ $tag->name }}</option>
                                                     @endforeach
                                                 </select>
-                                                <button type="button" class="btn btn-success add-tags-to-list-item" id="add-tags-{{ $toDoListItem->id }}"
+                                                <button type="button" class="btn btn-success add-tags-to-list-item"
+                                                        id="add-tags-{{ $toDoListItem->id }}"
                                                         disabled>Add tags
                                                 </button>
-                                                <button type="button" class="btn btn-danger remove-tags-from-list-item" id="remove-tags-{{ $toDoListItem->id }}"
+                                                <button type="button" class="btn btn-danger remove-tags-from-list-item"
+                                                        id="remove-tags-{{ $toDoListItem->id }}"
                                                         disabled>Remove tags
                                                 </button>
                                             </h5>
