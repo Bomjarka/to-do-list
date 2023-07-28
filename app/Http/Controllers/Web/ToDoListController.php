@@ -23,14 +23,14 @@ class ToDoListController extends Controller
     public function index(User $user): View|\Illuminate\Foundation\Application|Factory|Application
     {
         $userLists = $user->toDoLists;
-        $sharedUsers = [];
         $usersAndPermissions = [];
         foreach ($userLists as $userList) {
-            $sharedUsers = Arr::flatten($userList->sharedTo($userList));
 
+            $sharedUsers = Arr::flatten($userList->sharedTo($userList));
             foreach ($sharedUsers as $sharedUser) {
-                if ($listPermission = $sharedUser->listPermission($userList->id)) {
-                    $usersAndPermissions[$sharedUser->id] = [
+                $listPermission = $sharedUser->listPermission($userList->id);
+                if ($listPermission) {
+                    $usersAndPermissions[$sharedUser->id][] = [
                         'userName' => $sharedUser->name,
                         'read' => $listPermission->read,
                         'write' => $listPermission->write,
@@ -41,6 +41,22 @@ class ToDoListController extends Controller
         }
 
         return view('todolists', ['user' => $user, 'userLists' => $userLists, 'usersAndPermissions' => $usersAndPermissions]);
+    }
+
+    /**
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
+    public function indexUsersLists(): View|\Illuminate\Foundation\Application|Factory|Application
+    {
+        $user = auth()->user();
+        $listPermissions = $user->listPermissions;
+        $lists = [];
+        foreach ($listPermissions as $listPermission) {
+            $listPermissionListUser = $listPermission->list->user;
+            $lists[$listPermissionListUser->id][$listPermission->id] = $listPermission;
+        }
+
+        return view('users_todolists', ['usersAndListsPermissions' => $lists]);
     }
 
     /**

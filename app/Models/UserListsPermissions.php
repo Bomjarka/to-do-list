@@ -25,4 +25,12 @@ class UserListsPermissions extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * @return BelongsTo
+     */
+    public function list(): BelongsTo
+    {
+        return $this->belongsTo(ToDoList::class);
+    }
 }

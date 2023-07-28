@@ -42,6 +42,9 @@
                         <a class="nav-link" href="{{ route('tags-index') }}">
                             {{ __('Tags') }}
                         </a>
+                        <a class="nav-link" href="{{ route('users-lists') }}">
+                            {{ __('Other users lists') }}
+                        </a>
                     @endif
                 </ul>
 

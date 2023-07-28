@@ -24,15 +24,17 @@
                                         @if(!empty($usersAndPermissions))
                                             <h6>Shared to:</h6>
                                             @foreach($usersAndPermissions as $userId => $userPermissions)
-                                                @if($userList->id === $userPermissions['listId'])
-                                                    <h6 class="card-text">Name: {{ $userPermissions['userName'] }}
-                                                        Permissions:
-                                                        read
-                                                        <strong>{{ (string) $userPermissions['read'] ? 'yes' : 'no' }}</strong>
-                                                        write
-                                                        <strong>{{ (string) $userPermissions['write'] ? 'yes' : 'no' }}</strong>
-                                                    </h6>
-                                                @endif
+                                                @foreach($userPermissions as $userPermission)
+                                                    @if($userList->id === $userPermission['listId'])
+                                                        <h6 class="card-text">Name: {{ $userPermission['userName'] }}
+                                                            Permissions:
+                                                            read
+                                                            <strong>{{ (string) $userPermission['read'] ? 'yes' : 'no' }}</strong>
+                                                            write
+                                                            <strong>{{ (string) $userPermission['write'] ? 'yes' : 'no' }}</strong>
+                                                        </h6>
+                                                    @endif
+                                                @endforeach
                                             @endforeach
                                         @endif
                                         <button type="button" data-list-id="{{ $userList->id }}"

@@ -54,6 +54,11 @@ class User extends Authenticatable
         return $this->hasMany(ToDoList::class)->orderBy('created_at');
     }
 
+    public function listPermissions()
+    {
+        return $this->hasMany(UserListsPermissions::class);
+    }
+
     public function listPermission($listId)
     {
         return UserListsPermissions::whereUserId($this->id)->whereListId($listId)->first();
