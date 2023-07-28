@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ToDoList;
 use Illuminate\Console\Command;
 use Spatie\Permission\Models\Permission;
 
@@ -26,12 +27,7 @@ class TestCommand extends Command
      */
     public function handle()
     {
-        $permissionName = 'read_lists';
-
-        if (!Permission::whereName($permissionName)->first()) {
-            Permission::create(['name' => 'read_lists']);
-        }
-
-        Permission::whereName($permissionName)->first()->delete();
+        $list = ToDoList::find(63);
+        dd($list->sharedTo($list));
     }
 }

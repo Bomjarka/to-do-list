@@ -21,6 +21,20 @@
                                         <a href="{{ route('todo-list', [$user, $userList]) }}"><h5
                                                 class="card-title">{{ $userList->name }}</h5></a>
                                         <p class="card-text">ToDo points: {{ $userList->listItems()->count() }}</p>
+                                        @if(!empty($usersAndPermissions))
+                                            <h6>Shared to:</h6>
+                                            @foreach($usersAndPermissions as $userId => $userPermissions)
+                                                @if($userList->id === $userPermissions['listId'])
+                                                    <h6 class="card-text">Name: {{ $userPermissions['userName'] }}
+                                                        Permissions:
+                                                        read
+                                                        <strong>{{ (string) $userPermissions['read'] ? 'yes' : 'no' }}</strong>
+                                                        write
+                                                        <strong>{{ (string) $userPermissions['write'] ? 'yes' : 'no' }}</strong>
+                                                    </h6>
+                                                @endif
+                                            @endforeach
+                                        @endif
                                         <button type="button" data-list-id="{{ $userList->id }}"
                                                 class="btn btn-outline-secondary share-list-button"
                                                 data-bs-toggle="modal"
@@ -182,7 +196,9 @@
                             'div class="card-body">' +
                             '<a href="' + route + '"><h5 class="card-title">' + listName + '</h5></a>' +
                             '<p class="card-text">ToDo points: ' + dealsCount + '</p>' +
-                            '</div><div class="card-footer"><small class="text-muted">Created: ' + listCreated + '</small></div></div><br>'));
+                            '<button type="button" data-list-id="' + listId + '"class="btn btn-outline-secondary share-list-button"data-bs-toggle="modal"data-bs-target="#shareListModal">Share List</button>' +
+                            '</div><div class="card-footer"><small class="text-muted">Created: ' + listCreated + '</small></div></div><br>'
+                        ));
 
                         //modal() is not a function, разобраться с порядком загрузки скриптов
                         // $('#createListModal').modal('hide');

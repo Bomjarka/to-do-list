@@ -7,13 +7,12 @@ use App\Models\Permissions;
 use App\Models\Tag;
 use App\Models\ToDoList;
 use App\Models\User;
-use App\Models\UserListsPermissions;
 use App\Services\PermissionService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Arr;
 
 class ToDoListController extends Controller
 {
@@ -23,9 +22,25 @@ class ToDoListController extends Controller
      */
     public function index(User $user): View|\Illuminate\Foundation\Application|Factory|Application
     {
-        $userLists = $user->toDoLists->sortBy('created_at');
+        $userLists = $user->toDoLists;
+        $sharedUsers = [];
+        $usersAndPermissions = [];
+        foreach ($userLists as $userList) {
+            $sharedUsers = Arr::flatten($userList->sharedTo($userList));
 
-        return view('todolists', ['user' => $user, 'userLists' => $userLists]);
+            foreach ($sharedUsers as $sharedUser) {
+                if ($listPermission = $sharedUser->listPermission($userList->id)) {
+                    $usersAndPermissions[$sharedUser->id] = [
+                        'userName' => $sharedUser->name,
+                        'read' => $listPermission->read,
+                        'write' => $listPermission->write,
+                        'listId' => $userList->id
+                    ];
+                }
+            }
+        }
+
+        return view('todolists', ['user' => $user, 'userLists' => $userLists, 'usersAndPermissions' => $usersAndPermissions]);
     }
 
     /**
@@ -94,6 +109,7 @@ class ToDoListController extends Controller
         $usersIds = $request->get('selected-users');
         $listId = $request->get('list-id');
         $sharedList = ToDoList::find($listId);
+
         if (!$sharedList) {
             return redirect()->back()->withErrors(['msg' => 'No list found']);
         }

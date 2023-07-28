@@ -51,7 +51,7 @@ class User extends Authenticatable
 
     public function toDoLists()
     {
-        return $this->hasMany(ToDoList::class);
+        return $this->hasMany(ToDoList::class)->orderBy('created_at');
     }
 
     public function listPermission($listId)
