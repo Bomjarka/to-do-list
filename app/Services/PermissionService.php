@@ -81,4 +81,16 @@ class PermissionService
             $this->enablePermissionAtUserListPermission($listPermission, $permission);
         }
     }
+
+    /**
+     * @param User $user
+     * @param ToDoList $toDoList
+     * @param array $permissions
+     * @return void
+     */
+    public function shareListToUser(User $user, ToDoList $toDoList, array $permissions): void
+    {
+        $this->addPermissions($user, $permissions);
+        $this->addUserListsPermission($user, $toDoList, $permissions);
+    }
 }

@@ -11,8 +11,10 @@ use App\Services\PermissionService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use function str_contains;
 
 class ToDoListController extends Controller
 {
@@ -40,7 +42,9 @@ class ToDoListController extends Controller
             }
         }
 
-        return view('todolists', ['user' => $user, 'userLists' => $userLists, 'usersAndPermissions' => $usersAndPermissions]);
+        return view('todolists', [
+            'user' => $user, 'userLists' => $userLists, 'usersAndPermissions' => $usersAndPermissions
+        ]);
     }
 
     /**
@@ -79,6 +83,7 @@ class ToDoListController extends Controller
 
     /**
      * @param Request $request
+     * @param User $user
      * @param ToDoList $toDoList
      * @return Application|Factory|View|\Illuminate\Foundation\Application
      */
@@ -93,7 +98,7 @@ class ToDoListController extends Controller
         $searchTagsIds = $request->get('search-tags');
 
         $foundToDoListItems = $toDoListItems->filter(function ($item) use ($searchItem, $searchTagsIds) {
-            if (\str_contains($item->name, $searchItem) === false) {
+            if (str_contains($item->name, $searchItem) === false) {
                 return false;
             }
             if ($searchTagsIds !== null) {
@@ -120,7 +125,14 @@ class ToDoListController extends Controller
         ]);
     }
 
-    public function shareListToUsers(Request $request, User $user, PermissionService $permissionService)
+    /**
+     * @param Request $request
+     * @param PermissionService $permissionService
+     * @return RedirectResponse
+     */
+    public function shareListToUsers(
+        Request $request,
+        PermissionService $permissionService): RedirectResponse
     {
         $usersIds = $request->get('selected-users');
         $listId = $request->get('list-id');
@@ -136,8 +148,7 @@ class ToDoListController extends Controller
         foreach ($usersIds as $usersId) {
             $userToShare = User::find($usersId);
             if ($userToShare) {
-                $permissionService->addPermissions($userToShare, [$readPermission, $writePermission]);
-                $permissionService->addUserListsPermission($userToShare, $sharedList, [$readPermission, $writePermission]);
+                $permissionService->shareListToUser($userToShare, $sharedList, [$readPermission, $writePermission]);
             }
         }
 
