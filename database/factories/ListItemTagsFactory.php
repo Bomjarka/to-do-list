@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Tag;
+use App\Models\ToDoListItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,8 @@ class ListItemTagsFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'list_item_id' => ToDoListItem::all()->random(1)->first()->id,
+            'tag_id' => Tag::all()->random(1)->first()->id,
         ];
     }
 }

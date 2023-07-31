@@ -25,5 +25,6 @@ class TestCommand extends Command
      */
     public function handle()
     {
+
     }
 }

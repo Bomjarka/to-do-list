@@ -2,6 +2,7 @@ APP_CONTAINER_NAME := backend
 LOCAL_UID := $(shell id -u)
 LOCAL_GID := $(shell id -g)
 DOMAIN_EXISTS := $(shell grep -i "127.0.0.1 to-do-list.local" /etc/hosts)
+
 install: prepare-env build-clean up prepare-backend
 
 prepare-env: ## Подготовка окружения
@@ -15,6 +16,7 @@ prepare-backend: ## Подготовка приложения
 			docker-compose exec $(APP_CONTAINER_NAME) composer install
 			docker-compose exec $(APP_CONTAINER_NAME) php artisan key:generate
 			docker-compose exec $(APP_CONTAINER_NAME) php artisan migrate:fresh
+			docker-compose exec $(APP_CONTAINER_NAME) php artisan db:seed
 			docker-compose exec $(APP_CONTAINER_NAME) php artisan optimize
 build: ## Сборка контейнеров
 		$(shell docker-compose build)
