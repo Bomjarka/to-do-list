@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\ToDoList;
 use Illuminate\Console\Command;
-use Spatie\Permission\Models\Permission;
 
 class TestCommand extends Command
 {
@@ -27,7 +25,6 @@ class TestCommand extends Command
      */
     public function handle()
     {
-        $list = ToDoList::find(63);
-        dd($list->sharedTo($list));
+
     }
 }
