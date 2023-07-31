@@ -27,27 +27,39 @@
                                                 <h5>List name: {{ $userListPermission->list->name }}</h5>
                                             </div>
                                         </div>
-                                        <div class="card-body">
+                                        <div class="card-body ">
                                             <div class="card-deck">
                                                 <h5 class="card-title"></h5>
                                                 <div class="card-body">
                                                     <div class="card-deck ">
-                                                        <ul class="list-group list-group-numbered">
+                                                        <table class="table">
+                                                            <thead>
+                                                            <tr>
+                                                                <th scope="col">Name</th>
+                                                                <th scope="col">Image</th>
+                                                                <th scope="col">Tags</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
                                                             @foreach($userListPermission->list->listItems as $toDoListItem)
-                                                                <li class="list-group-item d-flex flex-row align-items-center"
-                                                                    id="deal-item-{{ $toDoListItem->id }}"
-                                                                    data-deal-id="{{ $toDoListItem->id }}">
-                                                                    <span>{{ $toDoListItem->name }}</span>
+                                                                <tr>
+                                                                    <td>{{ $toDoListItem->name }}</td>
                                                                     @if($toDoListItem->image)
-                                                                        <a href="{{ url('storage/images/' . $toDoListItem->image->name) }}"
-                                                                           target="_blank">
-                                                                            <img
-                                                                                src="{{ url('storage/images/' . $toDoListItem->image->preview_name) }}"
-                                                                                alt="{{ $toDoListItem->image->preview_name }}"></a>
+                                                                        <td>
+                                                                            <a href="{{ url('storage/images/' . $toDoListItem->image->name) }}"
+                                                                               target="_blank">
+                                                                                <img
+                                                                                    src="{{ url('storage/images/' . $toDoListItem->image->preview_name) }}"
+                                                                                    alt="{{ $toDoListItem->image->preview_name }}"></a>
+                                                                        </td>
+                                                                    @else
+                                                                       <td>No image</td>
                                                                     @endif
-                                                                </li>
+                                                                    <td>Tags: {{ $toDoListItem->getTags()->pluck('name')->implode(',') }}</td>
+                                                                </tr>
                                                             @endforeach
-                                                        </ul>
+                                                            </tbody>
+                                                        </table>
                                                     </div>
                                                 </div>
                                             </div>
