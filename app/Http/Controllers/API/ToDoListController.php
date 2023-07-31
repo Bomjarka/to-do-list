@@ -200,6 +200,7 @@ class ToDoListController extends Controller
     {
         $listItemId = $request->listId;
         $toDoListItem = ToDoListItem::find($listItemId);
+
         $listTags = $toDoListItem->listItemTags;
         if (!$toDoListItem) {
             return response()->json([
