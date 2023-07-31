@@ -35,12 +35,15 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav me-auto">
-                    @if(auth()->user())
-                        <a class="nav-link" href="{{ route('todo-lists-index') }}">
+                    @if($user = auth()->user())
+                        <a class="nav-link" href="{{ route('todo-lists-index', $user) }}">
                             {{ __('Your lists') }}
                         </a>
                         <a class="nav-link" href="{{ route('tags-index') }}">
                             {{ __('Tags') }}
+                        </a>
+                        <a class="nav-link" href="{{ route('users-lists') }}">
+                            {{ __('Other users lists') }}
                         </a>
                     @endif
                 </ul>

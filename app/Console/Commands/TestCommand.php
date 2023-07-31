@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Tag;
-use App\Models\ToDoListItem;
+use App\Models\ToDoList;
 use Illuminate\Console\Command;
+use Spatie\Permission\Models\Permission;
 
 class TestCommand extends Command
 {
@@ -27,9 +27,7 @@ class TestCommand extends Command
      */
     public function handle()
     {
-        $item = ToDoListItem::find(15);
-        $tagNames = $item->getTags()->pluck('name');
-        dd($tagNames->implode(','));
-
+        $list = ToDoList::find(63);
+        dd($list->sharedTo($list));
     }
 }

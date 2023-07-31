@@ -200,6 +200,7 @@ class ToDoListController extends Controller
     {
         $listItemId = $request->listId;
         $toDoListItem = ToDoListItem::find($listItemId);
+
         $listTags = $toDoListItem->listItemTags;
         if (!$toDoListItem) {
             return response()->json([
@@ -236,7 +237,12 @@ class ToDoListController extends Controller
         ]);
     }
 
-    public function removeItemTags(Request $request, TagService $tagService)
+    /**
+     * @param Request $request
+     * @param TagService $tagService
+     * @return JsonResponse
+     */
+    public function removeItemTags(Request $request, TagService $tagService): JsonResponse
     {
         $listItemId = $request->listId;
         $toDoListItem = ToDoListItem::find($listItemId);

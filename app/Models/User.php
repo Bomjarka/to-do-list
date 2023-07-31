@@ -7,10 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasPermissions;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -45,6 +51,16 @@ class User extends Authenticatable
 
     public function toDoLists()
     {
-        return $this->hasMany(ToDoList::class);
+        return $this->hasMany(ToDoList::class)->orderBy('created_at');
+    }
+
+    public function listPermissions()
+    {
+        return $this->hasMany(UserListsPermissions::class);
+    }
+
+    public function listPermission($listId)
+    {
+        return UserListsPermissions::whereUserId($this->id)->whereListId($listId)->first();
     }
 }
