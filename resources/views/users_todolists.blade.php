@@ -77,26 +77,6 @@
                                                                                id="deal-edit-id-{{ $toDoListItem->id }} data-list-id={{$userListPermission->list->id}}"></i>
                                                                             <i class="fa-solid fa-trash-can"
                                                                                id="deal-trash-id-{{ $toDoListItem->id }}"></i>
-                                                                        </td>
-                                                                        <label
-                                                                            for="edit-deal-id-{{ $toDoListItem->id }}"
-                                                                            hidden="">Edit deal:</label>
-                                                                        <input
-                                                                            type="text" class="form-control"
-                                                                            id="edit-deal-id-{{ $toDoListItem->id }}"
-                                                                            aria-describedby="basic-addon3"
-                                                                            value="{{ $toDoListItem->name }}" hidden="">
-                                                                        <button type="button"
-                                                                                class="btn btn-primary edit-deal"
-                                                                                id="edit-deal-button-{{ $toDoListItem->id }}"
-                                                                                hidden>Save
-                                                                        </button>
-                                                                        <button type="button"
-                                                                                class="btn btn-danger edit-deal"
-                                                                                id="cancel-edit-deal-button-{{ $toDoListItem->id }}"
-                                                                                hidden>Cancel
-                                                                        </button>
-                                                                        <td>
                                                                             <select
                                                                                 id="tags-select-{{ $toDoListItem->id }}"
                                                                                 class="form-select select-tags"
@@ -119,7 +99,24 @@
                                                                                     disabled>Remove tags
                                                                             </button>
                                                                         </td>
-
+                                                                        <label
+                                                                            for="edit-deal-id-{{ $toDoListItem->id }}"
+                                                                            hidden="">Edit deal:</label>
+                                                                        <input
+                                                                            type="text" class="form-control"
+                                                                            id="edit-deal-id-{{ $toDoListItem->id }}"
+                                                                            aria-describedby="basic-addon3"
+                                                                            value="{{ $toDoListItem->name }}" hidden="">
+                                                                        <button type="button"
+                                                                                class="btn btn-primary edit-deal"
+                                                                                id="edit-deal-button-{{ $toDoListItem->id }}"
+                                                                                hidden>Save
+                                                                        </button>
+                                                                        <button type="button"
+                                                                                class="btn btn-danger edit-deal"
+                                                                                id="cancel-edit-deal-button-{{ $toDoListItem->id }}"
+                                                                                hidden>Cancel
+                                                                        </button>
                                                                     @endif
                                                                 </tr>
                                                             @endforeach
